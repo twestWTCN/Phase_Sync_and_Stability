@@ -1,4 +1,4 @@
-function [PLV dRPvar MsKappa LHat LVar RPvar] = coupleKuramoto3Node_KLoop(Klist,omvar)
+function [PLV dRPvar MsKappa LHat LVar RPvar] = coupleKuramoto3Node_KLoop_Noise(Klist,sigvar)
 
 dt = 0.01;
 tend = 500;
@@ -8,7 +8,7 @@ burn = 25*fsamp;
 
 y = [1*pi; 2*pi; -1*pi/2; pi/2];
 cfreq = 3; period = (1/3)*(1/dt);
-omega = randnbetween(cfreq,omvar,4,1);
+omega = randnbetween(cfreq,0.5,4,1);
 
 A =[0 1 1 1;
     1 0 1 1
@@ -20,7 +20,7 @@ Nr = size(A,2);
 sppart = 5; L = 0;
 
 for i=1:numel(Klist)
-    [ystore{i} tvec{i}] = fx_Nnode_Kuramoto(dt,tt,Nr,Klist(i),A,omega,y,burn);
+    [ystore{i} tvec{i}] = fx_Nnode_Kuramoto_Noise(dt,tt,Nr,Klist(i),A,omega,sigvar,y,burn);
     a(1,:) = ystore{i}(1,:)-ystore{i}(2,:);
     a(2,:) = ystore{i}(2,:)-ystore{i}(3,:);
     a(3,:) = ystore{i}(3,:)-ystore{i}(4,:);
@@ -34,10 +34,11 @@ for i=1:numel(Klist)
     for p = 1:size(a,1); LVar(p,i) = std(log(SRP_Lengths(a(p,:),diff(a(p,:)),0.005,fsamp,1))); end
     for p = 1:size(a,1); [dum segRP] = SRP_Lengths(a(p,:),diff(a(p,:)),0.005,fsamp,1);segRP = segRP(segRP~=0);
         RPvar(p,i) = sqrt(circ_var(segRP'));    end
-    %     if rem(i,sppart) == 0
-    %         L = L+1;
-    %         figure(1)
-    %         subplot(size(Klist,2)./sppart,2,(2*L)-1); plot(ystore{i}(1,:),ystore{i}(2,:));
-    %         subplot(size(Klist,2)./sppart,2,(2*L)); plot(tvec{i},ystore{i}([1 2 3],:));
-    %     end
+%         if rem(i,sppart) == 0
+%             L = L+1;
+%             figure(1)
+%             subplot(size(Klist,2)./sppart,2,(2*L)-1); plot(ystore{i}(1,:),ystore{i}(2,:));
+%             subplot(size(Klist,2)./sppart,2,(2*L)); plot(tvec{i},ystore{i}([1 2 3],:));
+%         end
 end
+% a =1;
