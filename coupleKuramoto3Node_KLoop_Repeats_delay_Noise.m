@@ -2,12 +2,12 @@ clear; close all
 
 rng(2919)
 rN = 32;
-Klim = [-2.5 3];
-Klist = logspace(Klim(1),Klim(2),100);
-sigvar = [pi pi/2 pi/8];
-for om = 1:3
+Klim = [-2.5 2];
+Klist = logspace(Klim(1),Klim(2),75);
+sigvar = [pi pi/8 pi/8];
+for om = 1:2
     parfor rp = 1:rN
-        [PLV(:,:,rp) dRPvar(:,:,rp) MsKappa(:,:,rp) LHat(:,:,rp) LVar(:,:,rp) RPvar(:,:,rp)] = coupleKuramoto3Node_KLoop_Noise(Klist,sigvar(om))
+        [PLV(:,:,rp) dRPvar(:,:,rp) MsKappa(:,:,rp) LHat(:,:,rp) LVar(:,:,rp) RPvar(:,:,rp)] = coupleKuramoto3Node_KLoop_Noise(Klist,sigvar(om));
         disp(rp)
     end
     PLV_om{om} = PLV;

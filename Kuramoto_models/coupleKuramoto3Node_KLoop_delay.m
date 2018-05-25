@@ -1,4 +1,4 @@
-function [PLV dRPvar MsKappa LHat LVar RPvar] = coupleKuramoto3Node_KLoop_delay(Klist)
+function [PLV dRPvar MsKappa LHat LVar RPvar] = coupleKuramoto3Node_KLoop_delay(Klist,omvar)
 
 dt = 0.01;
 tend = 500;
@@ -6,8 +6,10 @@ tt = tend./dt;
 fsamp = 1/dt;
 burn = 25*fsamp;
 
+y = [1*pi; 2*pi; -1*pi/2; pi/2];
 cfreq = 3; period = (1/3)*(1/dt);
-omega = abs(randnbetween(cfreq,0.1,4,1));
+omega = randnbetween(cfreq,omvar,4,1);
+
 
 A =[0 1 1 1;
     1 0 1 1
