@@ -1,4 +1,5 @@
 function [segL_ddt segRP] = SRP_Lengths(RP,dRP,SRPeps,fsamp,period)
+segRP = NaN;
 qstable = find(abs(dRP')<SRPeps);
 consecSegs = SplitVec(qstable','consecutive');
 % consecSegs = fixGap(consecSegs,minsep);
