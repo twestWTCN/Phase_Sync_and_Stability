@@ -1,6 +1,6 @@
 function [PLV dRPvar MsKappa LHat LVar RPvar] = coupleKuramoto3Node_KLoop_Noise(Klist,sigvar)
 
-dt = 0.005;
+dt = 0.01;
 tend = 500;
 tt = tend./dt;
 fsamp = 1/dt;

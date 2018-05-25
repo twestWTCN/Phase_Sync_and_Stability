@@ -1,13 +1,13 @@
 function [PLV dRPvar MsKappa LHat LVar RPvar] = coupleKuramoto3Node_KLoop_delay_Noise(Klist,sigvar)
 
-dt = 0.01;
+dt = 0.005;
 tend = 500;
 tt = tend./dt;
 fsamp = 1/dt;
 burn = 25*fsamp;
 
 cfreq = 3; period = (1/3)*(1/dt);
-omega = abs(randnbetween(cfreq,0.1,4,1));
+omega = randnbetween(cfreq,0.5,4,1);
 
 A =[0 1 1 1;
     1 0 1 1
@@ -26,7 +26,7 @@ y = repmat(y,1,max(Da)+1);
 
 sppart = 5; L = 0;
 for i=1:numel(Klist)
-    [ystore{i} tvec{i}] = fx_Nnode_Kuramoto_delay(dt,tt,Nr,Klist(i),A,omega,y,D,burn);
+    [ystore{i} tvec{i}] = fx_Nnode_Kuramoto_delay_Noise(dt,tt,Nr,Klist(i),A,omega,sigvar,y,D,burn);
     a(1,:) = ystore{i}(1,:)-ystore{i}(2,:);
     a(2,:) = ystore{i}(2,:)-ystore{i}(3,:);
     a(3,:) = ystore{i}(3,:)-ystore{i}(4,:);
@@ -47,3 +47,4 @@ for i=1:numel(Klist)
 %             subplot(size(Klist,2)./sppart,2,(2*L)); plot(tvec{i},ystore{i}([1 2 3 4],:));
 %         end
 end
+a = 1;
