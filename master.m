@@ -3,7 +3,4 @@
 R = makeheader_phasesyncstab;
 add_phasesyncstab_paths(R)
 
-coupleKuramoto3Node_KLoop_Repeats
-coupleKuramoto3Node_KLoop_Repeats_Noise
-coupleKuramoto3Node_KLoop_Repeats_delay
-coupleKuramoto3Node_KLoop_Repeats_delay_Noise
+coupleKuramoto_Generic(R,'omvar',[0.5 0.1 0])

@@ -8,3 +8,10 @@ elseif strcmp(getenv('COMPUTERNAME'),'FREE')
     R.toolpath = 'C:\Users\twest\Documents\Work\MATLAB ADDONS';
     R.gitpath = 'C:\Users\twest\Documents\Work\GitHub';
 end
+R.seed = 1053432;
+R.rN = 32;
+R.Klist = logspace(-2.5,1,75);
+R.dt = 0.005;
+R.tend = 500;
+R.burn = 25*(1/R.dt);
+R.cfreq = 5; 
