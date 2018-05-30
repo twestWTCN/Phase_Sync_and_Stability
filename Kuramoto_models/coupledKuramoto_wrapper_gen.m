@@ -1,11 +1,14 @@
-function [PLV dRPvar MsKappa LHat LVar RPvar] = coupledKuramoto_wrapper_gen(R,Klist,dvar,omvar,sigvar,dflag)
+function [PLV dRPvar MsKappa LHat LVar RPvar SRPeps] = coupledKuramoto_wrapper_gen(R,Klist,dvar,omvar,sigvar,dflag,surflag)
+if nargin<7
+    surflag=0;
+end
 
 dt = R.dt;
 tend = R.tend;
 tt = tend./dt;
 fsamp = 1/dt;
 burn = R.burn;
-cfreq = R.cfreq; 
+cfreq = R.cfreq;
 omega = randnbetween(cfreq,omvar,4,1);
 
 A =[0 1 1 1;
@@ -28,9 +31,16 @@ else
     y = [1*pi; 2*pi; -1*pi/2; pi/2];
 end
 
+
 sppart = 5; L = 0;
 for i=1:numel(Klist)
     [ystore{i} tvec{i}] = fx_Nnode_Kuramoto_gen(dt,tt,Nr,Klist(i),A,omega,sigvar,y,D,burn);
+    if surflag ==1
+        SRPeps(i) = 0.005; % phase_SurrStats(ystore{i},200,1)
+    else
+        SRPeps(i) = R.SRPeps(i);
+    end
+    
     a(1,:) = ystore{i}(1,:)-ystore{i}(2,:);
     a(2,:) = ystore{i}(2,:)-ystore{i}(3,:);
     a(3,:) = ystore{i}(3,:)-ystore{i}(4,:);
@@ -39,11 +49,11 @@ for i=1:numel(Klist)
     a(6,:) = ystore{i}(3,:)-ystore{i}(1,:);
     for p = 1:size(a,1); PLV(p,i) = abs(mean(exp(1i*a(p,:)),2)); end
     for p = 1:size(a,1); dRPvar(p,i) = std(exp(1i*a(p,:)),[],2); end
-    for p = 1:size(a,1); MsKappa(p,i) = sum(SRP_Lengths(a(p,:),diff(a(p,:)),0.005,fsamp,1))./diff(tvec{i}([1 end])); end
-    for p = 1:size(a,1); LHat(p,i) = mean(log(SRP_Lengths(a(p,:),diff(a(p,:)),0.005,fsamp,1))); end
-    for p = 1:size(a,1); LVar(p,i) = std(log(SRP_Lengths(a(p,:),diff(a(p,:)),0.005,fsamp,1))); end
-    for p = 1:size(a,1); [dum segRP] = SRP_Lengths(a(p,:),diff(a(p,:)),0.005,fsamp,1);segRP = segRP(segRP~=0);
-        RPvar(p,i) = sqrt(circ_var(segRP'));    end
+    for p = 1:size(a,1); MsKappa(p,i) = sum(SRP_Lengths(a(p,:),diff(a(p,:)),SRPeps(i),fsamp,1))./diff(tvec{i}([1 end])); end
+    for p = 1:size(a,1); LHat(p,i) = mean(log(SRP_Lengths(a(p,:),diff(a(p,:)),SRPeps(i),fsamp,1))); end
+    for p = 1:size(a,1); LVar(p,i) = std(log(SRP_Lengths(a(p,:),diff(a(p,:)),SRPeps(i),fsamp,1))); end
+    for p = 1:size(a,1); [dum segRP] = SRP_Lengths(a(p,:),diff(a(p,:)),SRPeps(i),fsamp,1);segRP = segRP(segRP~=0);
+        try RPvar(p,i) = sqrt(circ_var(segRP'));  catch   RPvar(p,i) = NaN; disp('No Segments'); end;        end
     %         if rem(i,sppart) == 0
     %             L = L+1;
     %             figure(1)
