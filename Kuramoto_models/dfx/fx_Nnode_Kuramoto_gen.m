@@ -10,7 +10,7 @@ for i = size(y,2):tt
         dydt(r) = omega(r) + I;
     end
     y(:,i+1) = y(:,i) +(dt*dydt') + (stvec(:,i).*dt);
-    ystore(:,i) = (y(:,i));
+    ystore(:,i) = cos(y(:,i));
     t = t+dt;
     tvec(i) = t;
 end
