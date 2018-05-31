@@ -10,8 +10,8 @@ elseif strcmp(getenv('COMPUTERNAME'),'FREE')
 end
 R.seed = 1053432;
 R.rN = 8;
-R.Klist = logspace(-2.5,2.5,75);
+R.Klist = logspace(-2.5,1.5,75);
 R.dt = 0.005;
-R.tend = 800;
+R.tend = 1000;
 R.burn = 25*(1/R.dt);
 R.cfreq = 15; 

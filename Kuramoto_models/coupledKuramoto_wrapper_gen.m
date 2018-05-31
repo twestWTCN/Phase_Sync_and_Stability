@@ -34,7 +34,7 @@ end
 
 sppart = 5; L = 0;
 for i=1:numel(Klist)
-    [ystore{i} tvec{i}] = fx_Nnode_Kuramoto_gen(dt,tt,Nr,Klist(i),A,omega,sigvar,y,D,burn);
+    [ystore{i} tvec{i} rlxtime(i)] = fx_Nnode_Kuramoto2O_gen(dt,tt,Nr,Klist(i),A,omega,sigvar,y,D,burn);
     if surflag ==1
         SRPeps(i) = 0.005; % phase_SurrStats(ystore{i},200,1)
     else
