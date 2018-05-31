@@ -3,7 +3,7 @@ rng(R.seed)
 rN = R.rN;
 Klist = R.Klist;
 % set defaults
-omvar = 0.5;
+omvar = 1;
 sigvar =0;
 dvar = 0.05;
 
