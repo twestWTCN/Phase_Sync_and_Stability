@@ -1,4 +1,4 @@
-function coupleKuramoto_Generic(R,varnamez,varlist,dflag,Tag)
+function coupleNMM_Generic(R,varnamez,varlist,dflag,Tag)
 rng(R.seed)
 rN = R.rN;
 Klist = R.Klist;
@@ -16,9 +16,9 @@ for L = 1:3
         case 'dvar'
             dvar = varlist(L);
     end
-        [d{1} d{2} d{3} d{4} d{5} d{6} d{7} SRPeps] = coupledKuramoto_wrapper_gen(R,Klist,dvar,omvar,sigvar,dflag,1);
+        [d{1} d{2} d{3} d{4} d{5} d{6} d{7} SRPeps] = coupledNMM_wrapper_gen(R,Klist,dvar,omvar,sigvar,dflag,1);
     R.SRPeps = 0.005;
-    for rp = 1:rN
+    parfor rp = 1:rN
         [PLV(:,:,rp) dRPvar(:,:,rp) MsKappa(:,:,rp) LHat(:,:,rp) LVar(:,:,rp) RPvar(:,:,rp) rlxtime(:,:,rp)] = coupledKuramoto_wrapper_gen(R,Klist,dvar,omvar,sigvar,dflag)
         disp(rp)
     end

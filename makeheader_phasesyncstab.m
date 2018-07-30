@@ -8,10 +8,11 @@ elseif strcmp(getenv('COMPUTERNAME'),'FREE')
     R.toolpath = 'C:\Users\twest\Documents\Work\MATLAB ADDONS';
     R.gitpath = 'C:\Users\twest\Documents\Work\GitHub';
 end
-R.seed = 1053432;
+R.seed = 2312;
 R.rN = 8;
-R.Klist = logspace(-2.5,1.5,75);
-R.dt = 0.005;
-R.tend = 1000;
-R.burn = 25*(1/R.dt);
-R.cfreq = 15; 
+R.Klist = logspace(-2,4,25); %logspace(-2.5,2.5,25);
+R.dt = 0.1; %0.001;
+R.tend = 1500; % 1500
+R.burn = 50*(1/R.dt); %50*(1/R.dt);
+R.cfreq = 15;
+R.period = floor((3/R.cfreq)*(1/R.dt)); % Minimum sync size

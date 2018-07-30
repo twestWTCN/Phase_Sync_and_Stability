@@ -1,8 +1,8 @@
 % Master for Phase Sync and Stability Paper
 close all
 R = makeheader_phasesyncstab;
-add_phasesyncstab_paths(R)
-
+% add_phasesyncstab_paths(R)
+R.rN = 2;
 coupleKuramoto_Generic(R,'omvar',[2.5 1 0.1],0,'OmegaVar')
 h1 = figure; plotSimOutputs(R,'OmegaVar',[2.5 1 0.1],h1)
 

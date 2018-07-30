@@ -10,6 +10,12 @@ seglist = find(segL_ddt>(period));
 seg_ddt = [consecSegs{segL_ddt>(period)}];
 segL_ddt = segL_ddt(segL_ddt>(period))/fsamp;
 
-for i = 1:numel(consecSegs)
-    segRP(i) = circ_mean(RP(consecSegs{i})');
+for i = 1:numel(seglist)
+    if segL_ddt(i)<(400) %%% || std(diff(dRP))>0.1
+        segRP(i) = circ_mean(RP(consecSegs{seglist(i)})');
+    end
+end
+
+if isempty(segL_ddt)
+    segL_ddt = NaN; segRP = NaN;
 end
