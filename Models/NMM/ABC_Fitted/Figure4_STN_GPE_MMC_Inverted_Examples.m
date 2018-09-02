@@ -4,8 +4,18 @@ addpath('C:\Users\twest\Documents\Work\MATLAB ADDONS\DrosteEffect-BrewerMap-221b
 load('C:\Users\twest\Documents\Work\GitHub\Phase_Sync_and_Stability\Models\NMM\ABC_Fitted\STN_GPe\bmod.mat')
 load('C:\Users\twest\Documents\Work\GitHub\Phase_Sync_and_Stability\Models\NMM\ABC_Fitted\MMC_ON\MMC_ON.mat')
 
-
-
+R.rootn = 'C:\Users\twest\Documents\Work\Github\SimAnneal_NeuroModel\Projects\Rat_NPD\';
+R.out.tag = 'ModComp';
+daglist = {'NPD_ModComp_M1','NPD_ModComp_M2','NPD_ModComp_M3',...
+    'NPD_ModComp_M4','NPD_ModComp_M5','NPD_ModComp_M6','NPD_ModComp_M7'};
+mnum = 7;
+% Load Model
+load([R.rootn 'outputs\' R.out.tag '\' daglist{mnum} '\modelspec_' R.out.tag '_' daglist{mnum} '.mat'])
+m = varo;
+% load modelfit
+load([R.rootn 'outputs\' R.out.tag '\' daglist{mnum} '\modelfit_' R.out.tag '_' daglist{mnum} '.mat'])
+R = varo;
+BPfit =  R.Mfit.BPfit;
 R.Bcond = 2;
 p = bmod;
 R.obs.gainmeth = R.obs.gainmeth(1);

@@ -4,7 +4,9 @@ load('C:\Users\twest\Documents\Work\GitHub\Phase_Sync_and_Stability\Models\NMM\A
 R.Bcond = 2;
 p = bmod;
 R.obs.gainmeth = R.obs.gainmeth(1);
-R = setSimTime(R,32);
+R = setSimTime(R,256);
+R.obs.brn = 5;
+
 % Nought Connectivity
 Anought = repmat(-32,2);
 Acon = Anought;
@@ -33,6 +35,7 @@ for jr = 1:3
         u = innovate_timeseries(R,m);
         u{1} = u{1}.*sqrt(R.IntP.dt);
         xsims = R.IntP.intFx(R,m.x,u,pnew,m);
+        R.obs.trans.norm = 0;
         % Run Observer function
         if isfield(R.obs,'obsFx')
             xsims = R.obs.obsFx(xsims,m,pnew,R);
@@ -46,9 +49,11 @@ for jr = 1:3
         
         figure(100+jr)
         for ni = 1:2
-            plot(linspace(0,length(xsims{1})*R.IntP.dt,length(xsims{1})),xsims{1}(ni,:)+((ni-1)*5)','color',cmap(ni,:)); hold on
+            plot(linspace(0,length(xsims{1})*R.IntP.dt,length(xsims{1})),xsims{1}(ni,:)+((ni-1)*5)','color',cmap(ni,:),'LineWidth',1.5); hold on
         end
-        xlim([5 8]); ylim([-5 12])
+        xlim([5 8]); ylim([-5 13.5])
+        hold on
+        plot([7.5 8],[-4 -4],'k','LineWidth',2)        
         set(gcf,'Position',[100   100   500   202])
         hAxes = gca;
         %         hAxes.XRuler.Axle.LineStyle = 'none';
@@ -64,14 +69,19 @@ R.plot.outFeatFx({feat_simjr{3}},{},R.data.feat_xscale,R,1,[])
 for i = 1:4
     subplot(2,2,i)
     g = gca;
+    g.FontSize = 16;
     delete(g.Children(2))
+g.Children(1).LineWidth = 3;
     g.Children(1).LineStyle = '--';
-    g.Children(2).LineStyle = '-';
-    g.Children(2).LineStyle = '-';
+    
     g.Children(2).LineWidth = 3;
+    g.Children(2).LineStyle = '-';
+    
+    g.Children(3).LineWidth = 3;
     g.Children(3).LineStyle = '-.';
     
     if i == 2 || i == 3
+        ylim([0 1])
         g.Children(1).Color = cmap(i-1,:)
         g.Children(2).Color = cmap(i-1,:)
         g.Children(3).Color = cmap(i-1,:)

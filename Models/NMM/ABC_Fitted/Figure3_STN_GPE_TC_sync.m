@@ -12,7 +12,7 @@ R.obs.brn = 5;
 % Nought Connectivity
 Anought = repmat(-32,2);
 Acon = Anought;
-Cswitch = linspace(-3,6,64);
+Cswitch = linspace(-2,5,64);
 
 % plotting ops
 Lss = {'-','--'}; %,'-.'};
@@ -25,8 +25,8 @@ for j = 1:length(Cswitch)
         Acon = Anought;
         pnew = p;
         
-        pnew.A{1}(1,2) = Cswitch(j);
-        pnew.A{2}(2,1) = Cswitch(i);
+        pnew.int{1}.T = Cswitch(j);
+        pnew.int{2}.T = Cswitch(i);
         
         namerz = 'none';
         rng(12312);
@@ -67,23 +67,19 @@ for j = 1:length(Cswitch)
         %         R.plot.outFeatFx({},{feat_sim},R.data.feat_xscale,R,1,[])
     end
 end
+close all
 [cmap] = brewermap(128,'RdYlBu');
 colormap(cmap)
 
 subplot(2,1,1)
 colGridCon(Cswitch,Cswitch,GPe,3)
-xlabel('STN -> GPe'); ylabel('GPe -| STN')
-title('GPe Beta Power');
-caxis([-0.5 5])
-a = gca;
-a.FontSize = 16;
+xlabel('\tau_{GPe}'); ylabel('\tau_{STN}')
+title('GPe Beta Power'); caxis([-1 5])
 set(gcf,'Position',[850   437   950   425])
 
 subplot(2,1,2)
 colGridCon(Cswitch,Cswitch,STN,3)
-xlabel('STN -> GPe'); ylabel('GPe -| STN')
-title('STN Beta Power');
-caxis([-0.5 5])
-a = gca;
-a.FontSize = 16;
+xlabel('\tau_{GPe}'); ylabel('\tau_{STN}')
+title('STN Beta Power'); caxis([-1 5])
+
 set(gcf,'Position',[1286         129         514         858])

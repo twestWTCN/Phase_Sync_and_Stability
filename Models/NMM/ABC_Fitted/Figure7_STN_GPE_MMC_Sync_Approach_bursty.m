@@ -6,10 +6,10 @@ load('C:\Users\twest\Documents\Work\GitHub\Phase_Sync_and_Stability\Models\NMM\A
 
 R.Bcond = 2;
 p = bmod;
-R.obs.gainmeth = {1}; %{R.obs.gainmeth{1}};
-R = setSimTime(R,32);
+R.obs.gainmeth = {R.obs.gainmeth{1}};
+R = setSimTime(R,68);
 R.obs.brn = 5;
-            R.obs.trans.norm = 0;
+R.obs.trans.norm = 0;
 
 %% Conjoin Model
 R.chsim_name = {'GPE' 'STN' 'MMC'};
@@ -71,6 +71,10 @@ cmap = linspecer(3);
 CswitchI = linspace(-2,4,64);
 CswitchJ = linspace(-3,1,64);
 
+burstFano = NaN(size(CswitchI,3),size(CswitchJ,3),2);
+burstVar = NaN(size(CswitchI,3),size(CswitchJ,3),2);
+burstMean = NaN(size(CswitchI,3),size(CswitchJ,3),2);
+
 for j = 1:length(CswitchJ)
     parfor i = 1:length(CswitchI)
         [i j]
@@ -113,9 +117,33 @@ for j = 1:length(CswitchJ)
             beta_ind = find(R.data.feat_xscale > 14  & R.data.feat_xscale <24);
             STN(i,j) = max(squeeze(feat_sim(1,1,1,1,beta_ind)));
             GPe(i,j) = max(feat_sim(1,2,2,1,beta_ind));
+            
+            % Bursts
+            K = 1;
+            bF = NaN(1,2);
+            bV = NaN(1,2);
+            bM = NaN(1,2);
+            for K = 1:2
+                [fxsims] = ft_preproc_bandpassfilter(xsims{1}, 1/R.IntP.dt, [14 21],[], 'fir');
+                fstn = abs(hilbert(fxsims(K,:)));
+                burst = (fstn>2.5*std(fstn));
+                burstI = find(burst);
+                consecSegs = SplitVec(burstI,'consecutive');
+                burstL = cellfun('length',consecSegs);
+                bF(K) = var(burstL)/mean(burstL);
+                bV(K) = var(burstL);
+                bM(K) = mean(burstL);
+            end
+            
+            burstFano(i,j,:) = bF;
+            burstVar(i,j,:) = bV;
+            burstMean(i,j,:) = bM;
         else
             STN(i,j) = NaN;
             GPe(i,j) = NaN;
+            burstFano(i,j,:) = NaN(1,2);
+            burstVar(i,j,:) = NaN(1,2);
+            burstMean(i,j,:) = NaN(1,2);
         end
         %         figure
         %         R.plot.outFeatFx({},{feat_sim},R.data.feat_xscale,R,1,[])
@@ -140,6 +168,28 @@ subplot(2,1,2)
 colGridCon(CswitchI,CswitchJ,STN,4)
 xlabel('M2 \rightarrow  STN'); ylabel('STN \rightarrow M2')
 title('STN Beta Power'); xlim([-2 4]);ylim([-3 1]); caxis([-2 1.5])
+a = gca;
+a.FontSize = 16;
+set(gcf,'Position',[1286         129         514         858])
+
+load('STN_GPe_6464_burst.mat')
+figure
+colormap(cmap)
+
+subplot(2,1,1)
+colGridCon(CswitchI,CswitchJ,log10(squeeze(burstMean(:,:,1))),4)
+xlabel('M2 \rightarrow STN','FontSize',14); ylabel('STN \rightarrow M2','FontSize',14)
+title('GPe Beta Fano Factor','FontSize',14); xlim([-2 4]);ylim([-3 1]);% caxis([-2 1.5])
+a = gca;
+a.FontSize = 16;
+
+
+set(gcf,'Position',[850   437   950   425])
+
+subplot(2,1,2)
+colGridCon(CswitchI,CswitchJ,log10(squeeze(burstVar(:,:,2))),4)
+xlabel('M2 \rightarrow  STN'); ylabel('STN \rightarrow M2')
+title('STN Beta Fano Factor'); xlim([-2 4]);ylim([-3 1]);% caxis([-2 1.5])
 a = gca;
 a.FontSize = 16;
 set(gcf,'Position',[1286         129         514         858])
