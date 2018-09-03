@@ -1,7 +1,9 @@
 %% Plot Model Output
 clear; close all
 addpath('C:\Users\twest\Documents\Work\MATLAB ADDONS\DrosteEffect-BrewerMap-221b913')
-% load('C:\Users\Tim\Documents\Work\GIT\Phase_Sync_and_Stability\Models\NMM\ABC_Fitted\STN_GPe\bmod.mat')
+addpath('C:\Users\twest\Documents\Work\MATLAB ADDONS\PEB_DFA')
+addpath('C:\Users\twest\Documents\Work\MATLAB ADDONS\ATvDFA-package')
+
 load('C:\Users\twest\Documents\Work\GitHub\Phase_Sync_and_Stability\Models\NMM\ABC_Fitted\STN_GPe\bmod.mat')
 R.Bcond = 2;
 p = bmod;
@@ -13,21 +15,22 @@ R.obs.trans.norm = 0;
 % Nought Connectivity
 Anought = repmat(-32,2);
 Acon = Anought;
-Cswitch = linspace(-2,4,64);
+Cswitch = linspace(-2,5,64);
 
 % plotting ops
 Lss = {'-','--'}; %,'-.'};
 cmap = linspecer(3);
-sysEig = zeros(4,length(Cswitch));
+
 DFA_Evi = zeros(2,length(Cswitch));
 DFA_Alpha = zeros(2,length(Cswitch));
+
 parfor i = 1:length(Cswitch)
     [i]
     Acon = Anought;
     pnew = p;
     
-    pnew.A{1}(1,2) = Cswitch(i);
-    pnew.A{2}(2,1) = Cswitch(i);
+    pnew.int{1}.T = Cswitch(i);
+    pnew.int{2}.T = Cswitch(i);
     
     namerz = 'none';
     rng(12312);
@@ -70,8 +73,8 @@ parfor i = 1:length(Cswitch)
         for h = 1:2
             blims = [Frq(h)-2.5 Frq(h)+2.5];
             fs = 1/R.IntP.dt;
-            X = abs(hilbert(ft_preproc_bandpassfilter(xsims{1}(h,:),fs,blims,[],'fir')));
-            %             X = abs(hilbert(xsims{1}(h,:)));
+                        X = abs(hilbert(ft_preproc_bandpassfilter(xsims{1}(h,:),fs,blims,[],'fir')));
+%             X = abs(hilbert(xsims{1}(h,:)));
             DFAP = [];
             DFAP(1) = fs; DFAP(2) = 8/blims(2);  DFAP(3) = 10;  DFAP(4) = 50;  DFAP(5) = 0;
             [bmod win evi alpha] = peb_dfa_gen(X,DFAP,0)
@@ -80,25 +83,22 @@ parfor i = 1:length(Cswitch)
             evi_tmp(h) = evi(2);
             alpha_tmp(h) = alpha(1);
         end
-        
         Jeig = real(eig(J{1}));
 %         Jeig(abs(Jeig)<1e-12) = NaN; % Remove very small (numerical error)
-       sysEig(:,i) = Jeig; 
+        sysEig(:,i) = Jeig
         DFA_Evi(:,i) = evi_tmp;
         DFA_Alpha(:,i) =alpha_tmp;
         EnvVar(:,i) = var_tmp;
-    else
+    else       
         STN(i) = NaN;
         GPe(i) = NaN;
         sysEig(:,i) = NaN(4,1);
         DFA_Evi(:,i) = nan(2,1);
         DFA_Alpha(:,i) = nan(2,1);
         EnvVar(:,i) = nan(2,1);
-        
     end
     %         figure
     %         R.plot.outFeatFx({},{feat_sim},R.data.feat_xscale,R,1,[])
-    %     cprintf('red',num2str(i))
 end
 
 close all
@@ -108,7 +108,7 @@ subplot(4,1,1)
 plot(Cswitch,STN,'color',cmap(1,:),'LineWidth',2)
 hold on
 plot(Cswitch,GPe,'color',cmap(2,:),'LineWidth',2)
-    xlabel('Connection Strength')
+    xlabel('STN/GPe Time Constants')
     ylim([-1 10])
     xlim([-2 4])
 
@@ -119,7 +119,7 @@ for h = 1:2
     yyaxis left
     ylabel('DFA \alpha / Env. Var.')
     a = gca;
-    %     a.YLabel.String = 'DFA Alpha / Envelope Variance';
+%     a.YLabel.String = 'DFA Alpha / Envelope Variance';
     a.YColor = cmap(h,:);
     ag(1) = plot(Cswitch,DFA_Alpha(h,:),'color',cmap(h,:));
     hold on
@@ -128,20 +128,23 @@ for h = 1:2
     ylabel('Linearity')
     ag(2) = plot(Cswitch,DFA_Evi(h,:),'LineStyle','--','color',cmap(h,:).*0.1);
     a = gca;
-    %     a.YLabel.String = 'Evidence for Linearity';
+%     a.YLabel.String = 'Evidence for Linearity';
     a.YColor = cmap(h,:).*0.1;
 %     if h ==2
         legend(ag,{'DFA \alpha','L Score','Variance'},'box','on','Location','SouthWest')
 %     end
     xlim([-2 4])
-    xlabel('Connection Strength')
+    xlabel('STN/GPe Time Constants')
 end
+
     subplot(4,1,4)
-    X = repmat(Cswitch,4,1);
+    X = repmat(Cswitch,4,1)
 scatter(X(:),sysEig(:),'kx');
 hold on
 plot([-2 4],[0 0 ],'k--')
 ylim([-0.25 0.25])
+    xlim([-2 4])
+
 ylabel('eigenspectra')
     xlabel('Connection Strength')
-set(gcf,'Position',[680   294   538   684])
+    set(gcf,'Position',[680   294   538   684])

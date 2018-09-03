@@ -12,7 +12,7 @@ R.obs.brn = 5;
 % Nought Connectivity
 Anought = repmat(-32,2);
 Acon = Anought;
-Cswitch = linspace(-2,5,64);
+Cswitch = linspace(-2,5,8);
 
 % plotting ops
 Lss = {'-','--'}; %,'-.'};
